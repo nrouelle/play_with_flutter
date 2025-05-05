@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:testformvalidation/booklist.dart';
 
 void main() {
   runApp(const MyApp());
@@ -53,7 +54,15 @@ class _MyHomePageState extends State<MyHomePage> {
         action: SnackBarAction(label: 'Annuler', onPressed: () {}),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      _navigateToBookList();
     }
+  }
+
+  void _navigateToBookList() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const BookListWidget()),
+    );
   }
 
   @override
