@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:testformvalidation/models/book.dart';
+import 'package:testformvalidation/presentation/add_book_widget.dart';
 
 class BookListWidget extends StatefulWidget {
   const BookListWidget({super.key});
@@ -44,6 +45,14 @@ class _BookListWidgetState extends State<BookListWidget> {
                 );
               },
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const AddBookWidget(title: 'Add Book')))
+              .then((_) => loadBooksList()); // Reload the book list after adding a new book
+        },
+        tooltip: 'Add Book',
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
