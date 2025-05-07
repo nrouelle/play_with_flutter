@@ -1,10 +1,13 @@
 class Book {
-  String title;
-  String author;
+  final int? id;
+  final String? isbn;
+  final String? title;
+  final String? author;
  
   Book({
-    required this.title,
-    required this.author,
+    this.title,
+    this.author,
+    this.id, this.isbn
   });
 
   @override
