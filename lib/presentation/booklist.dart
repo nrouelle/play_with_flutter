@@ -1,8 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:testformvalidation/models/book.dart';
+import 'package:testformvalidation/data/book_repository_impl.dart';
+import 'package:testformvalidation/domain/models/book.dart';
+import 'package:testformvalidation/domain/usecases/get_all_books.dart';
 import 'package:testformvalidation/presentation/add_book_widget.dart';
 
 class BookListWidget extends StatefulWidget {
@@ -13,18 +12,27 @@ class BookListWidget extends StatefulWidget {
 }
 
 class _BookListWidgetState extends State<BookListWidget> {
+  late GetAllBooks _getAllBooks;
+
   var booksList = List<Book>.empty(growable: true);
   Future<void> loadBooksList() async {
-    final String jsonString = await rootBundle.loadString('assets/files/books.json');
-    final List<dynamic> data = jsonDecode(jsonString);
+    final repo = BookRepositoryImpl('assets/files/books.json');
+    _getAllBooks = GetAllBooks(bookRepository: repo);
     setState(() {
-      booksList = data.map((json) => Book.fromJson(json)).toList();
+      _getAllBooks.call().then((value) {
+        setState(() {
+          booksList = value;
+        });
+      }).catchError((error) {
+        print('Error loading books: $error');
+      });
     });
   }
 
   @override
   void initState() {
     super.initState();
+    
     loadBooksList();
   }
 
@@ -40,8 +48,8 @@ class _BookListWidgetState extends State<BookListWidget> {
               itemCount: booksList.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(booksList[index].title),
-                  subtitle: Text(booksList[index].author),
+                  title: Text(booksList[index].title ?? 'Unknown Title'),
+                  subtitle: Text(booksList[index].author ?? 'Unknown Author'),
                 );
               },
             ),
