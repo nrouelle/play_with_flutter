@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 import 'package:testformvalidation/presentation/booklist.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider<Logger>(
+          create: (_) => Logger(),
+        ),
+      ],
+      child: const MyApp(),
+    ));
 }
 
 class MyApp extends StatelessWidget {
