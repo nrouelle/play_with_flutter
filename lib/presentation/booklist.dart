@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 import 'package:testformvalidation/data/book_repository_impl.dart';
 import 'package:testformvalidation/domain/models/book.dart';
 import 'package:testformvalidation/domain/usecases/get_all_books.dart';
@@ -13,18 +15,20 @@ class BookListWidget extends StatefulWidget {
 
 class _BookListWidgetState extends State<BookListWidget> {
   late GetAllBooks _getAllBooks;
-
+  
   var booksList = List<Book>.empty(growable: true);
-  Future<void> loadBooksList() async {
+  Future<void> loadBooksList({required Logger logger}) async {
     final repo = BookRepositoryImpl('assets/files/books.json');
     _getAllBooks = GetAllBooks(bookRepository: repo);
+
     setState(() {
       _getAllBooks.call().then((value) {
         setState(() {
           booksList = value;
+          logger.d('Charging books list');
         });
       }).catchError((error) {
-        print('Error loading books: $error');
+        logger.e('Error loading books: $error');
       });
     });
   }
@@ -33,11 +37,12 @@ class _BookListWidgetState extends State<BookListWidget> {
   void initState() {
     super.initState();
     
-    loadBooksList();
+    loadBooksList(logger: Provider.of<Logger>(context, listen: false));
   }
 
   @override
   Widget build(BuildContext context) {
+    final logger = Provider.of<Logger>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Books List'),
@@ -55,8 +60,8 @@ class _BookListWidgetState extends State<BookListWidget> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const AddBookWidget(title: 'Add Book')))
-              .then((_) => loadBooksList()); // Reload the book list after adding a new book
+          Navigator.push(context, MaterialPageRoute(builder: (context) => AddBookWidget(title: 'Add Book',)))
+              .then((_) => loadBooksList(logger: logger)); // Reload the book list after adding a new book
         },
         tooltip: 'Add Book',
         child: const Icon(Icons.add),
